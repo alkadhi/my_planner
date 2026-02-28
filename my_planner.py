@@ -3,6 +3,7 @@ import arabic_reshaper
 from bidi.algorithm import get_display
 import aladhan
 import datetime
+from datetime import date
 from hijridate import Gregorian
 
 
@@ -36,49 +37,30 @@ def connectToPrayerService():
     return (times)
 
 
-
-
-
 def main():
 
     #ini
     pdf = FPDF()
     pdf.add_page()
 
-    #gets the fonts
-    pdf.add_font("Amiri", style="", fname="./fonts/Amiri/Amiri-Regular.ttf")
-
-    #sets font and adds text
-    pdf.set_font("Amiri", size=25)
-    pdf.cell(0, 20, text='﷽', new_x="LMARGIN", new_y="NEXT", align='C')
-
-    t = connectToPrayerService()
-
-    pdf.set_font("Amiri", size=20)
-    pdf.cell(0, 20, text=a('الواجبات'), new_x="LMARGIN", new_y="NEXT", align="R")
-
-    for i in range(1, 15):
-        pdf.rect(190, 45 + (i) * 15, 3, 3, style="")
-        pdf.line(190, 50 + (i) * 15 , 100, 50 + (i) * 15)
-
-    # PRAYER TIMES DISPLAY
-    pdf.cell(0, 20, text=a('مواقيت الصلاة'), new_x="LMARGIN", new_y="NEXT", align='L')
-    pdf.set_font("Amiri", size=15)
-    pdf.cell(0, 10, text=f'{t[0].readable_timing(show_date=False, _24h=True)}      ' + a('الصبح'), new_x="LMARGIN", new_y="NEXT", align='L')
-    pdf.cell(0, 10, text=f'{t[1].readable_timing(show_date=False, _24h=True)}      ' + a('الظهر'), new_x="LMARGIN", new_y="NEXT", align='L')
-    pdf.cell(0, 10, text=f'{t[2].readable_timing(show_date=False, _24h=True)}      ' + a('العصر'), new_x="LMARGIN", new_y="NEXT", align='L')
-    pdf.cell(0, 10, text=f'{t[3].readable_timing(show_date=False, _24h=True)}      ' + a('المغرب'), new_x="LMARGIN", new_y="NEXT", align='L')
-    pdf.cell(0, 10, text=f'{t[4].readable_timing(show_date=False, _24h=True)}      ' + a('العشاء'), new_x="LMARGIN", new_y="NEXT", align='L')
-
-
-    pdf.set_font("Amiri", size=20)
-    pdf.cell(0, 20, text='\n\n\n\n\n\n\n\n\n\n\n', new_x="LMARGIN", new_y="NEXT", align="L")
-    pdf.cell(0, 20, text=a('تاريخ اليوم  '), new_x="LMARGIN", new_y="NEXT", align="L")
-    pdf.cell(0, 10, text=f'{str(Gregorian.today().to_hijri())}', new_x="LMARGIN", new_y="NEXT", align='L')
-    pdf.cell(0, 10, text=f'{str(Gregorian.today())}', new_x="LMARGIN", new_y="NEXT", align='L')
+    with pdf.local_context(fill_opacity=0.2):
+        # Center the image on the page
+        # pdf.w and pdf.h are page width/height; 100 is image width
+        pdf.image("./background.png", x=(pdf.w-200), y=(pdf.h - 200), w=200)
     
+    pdf.add_font('Amiri', fname='./fonts/Amiri/Amiri-Regular.ttf')
+    pdf.set_font("Amiri", size=20)
+    pdf.cell(w=0, h=10, text="﷽", align="C", 
+         new_x="LMARGIN", new_y="NEXT")
 
-    pdf.output("tuto1.pdf") # output
+    pdf.cell(w=0, h=10, text="work", align="R", 
+         new_x="LMARGIN", new_y="TOP")
+
+    # Now this prints on the SAME line but aligned right
+    pdf.cell(w=0, h=10, text="prayer times", align="L", 
+            new_x="LMARGIN", new_y="NEXT")
+
+    pdf.output(f"tasks_{date.today()}.pdf") # output
 
 if __name__ == '__main__':
     main()
