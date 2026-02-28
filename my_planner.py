@@ -79,6 +79,7 @@ def page_lay(pdf, timeoffset):
     else:
         n = (((datetime.date.today().day + timeoffset)) * 5) - 5
 
+    pdf.set_font("Amiri", size=14)
     pdf.cell(w=30, h=10, text=a("الصبح"), align="L", new_x="RIGHT", new_y="TOP")
     time_obj = datetime.datetime.strptime(times[n].readable_timing(), "%Y/%m/%d %I:%M (%p)")
     pdf.cell(w=30, h=10, text=f"{time_obj.hour:02}:{time_obj.minute:02}", align="L", new_x="LMARGIN", new_y="NEXT")
@@ -115,8 +116,6 @@ def page_lay(pdf, timeoffset):
     pdf.cell(w=0, h=0, text=str(today), align="L", new_x="RIGHT", new_y="TOP")
     pdf.cell(w=0, h=0, text=f"{h_day} {a(h_month)} {h_year}", align="R", new_x="RIGHT", new_y="NEXT")
 
-
-
     pdf.set_xy(cursor_pos_x, cursor_pos_y)
 
 
@@ -125,20 +124,18 @@ def main():
 
     #ini
     pdf = FPDF()
-    pdf.add_page()
+
     pdf.add_font('Amiri', fname='./fonts/Amiri/Amiri-Regular.ttf')
     pdf.add_font('Noto Sans Symbols', fname='./fonts/Noto_Sans_Symbols/NotoSansSymbols-VariableFont_wght.ttf')
-
-    page_lay(pdf, 0)
-
-    cursor_pos_x = pdf.get_x()
-    cursor_pos_y = pdf.get_y()    
-    
+  
     dt = read_tasks()
     pdf.set_font("Amiri", size=12)
 
     for ds in range(0, dt[0]+1):
         # DAY
+
+        pdf.add_page()
+        page_lay(pdf, ds)
 
         for key in dt[1][ds].keys():
             #TASK
@@ -159,10 +156,6 @@ def main():
                     pdf.set_font("Amiri", size=12)
                     pdf.cell(w=pdf.w-40, h=10, text=a(i), align="R", 
                         new_x="LMARGIN", new_y="NEXT")
-        
-        if ds != dt[0] + 1:
-            pdf.add_page()
-            page_lay(pdf, ds + 1)
 
 
     pdf.output(f"tasks_{date.today()}.pdf") # output
